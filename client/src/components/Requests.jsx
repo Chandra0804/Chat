@@ -1,9 +1,11 @@
 import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -34,7 +36,7 @@ export default function Requests() {
         .then((response) => {
           console.log(response.data);
           alert("Friend request accepted");
-          window.location.reload();
+          navigate('/dashboard')
         });
     };
   }

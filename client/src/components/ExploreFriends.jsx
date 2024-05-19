@@ -1,9 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ExploreFriends() {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('https://chat-server-docker.onrender.com/api/exploreFriends', {
@@ -26,7 +28,7 @@ export default function ExploreFriends() {
       }).then((response) => {
         console.log(response.data);
         alert('Friend request sent');
-        window.location.reload();
+        navigate('/dashboard')
       });
     };
   }

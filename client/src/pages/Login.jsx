@@ -2,8 +2,10 @@ import React from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from 'react-router-dom';
 
 export default function Login() {
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -15,7 +17,7 @@ export default function Login() {
         localStorage.setItem("token", token);
         toast.success("Login successful");
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          navigate('/dashboard')
         }, 2000);
       }
     } catch (error) {
