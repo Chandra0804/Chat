@@ -9,7 +9,7 @@ const ChatList = ({ setRecipientId }) => {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/friends', {
+        const response = await axios.get('https://chat-server-docker.onrender.com/api/friends', {
           headers: {
             authorization: localStorage.getItem('token'),
           },

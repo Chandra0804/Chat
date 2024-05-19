@@ -8,7 +8,7 @@ import axios from "axios";
 // Get token from localStorage
 const token = localStorage.getItem("token");
 
-const socket = io("http://localhost:3000", {
+const socket = io("https://chat-server-docker.onrender.com/", {
   auth: {
     token: token,
   },
@@ -42,7 +42,7 @@ const ChatWindow = () => {
       if (!recipientId) return;
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/messages/${recipientId}`, {
+        const response = await axios.get(`https://chat-server-docker.onrender.com/api/messages/${recipientId}`, {
           headers: {
             authorization: token,
           },
@@ -69,7 +69,7 @@ const ChatWindow = () => {
       };
 
       try {
-        await axios.post("http://localhost:3000/api/send-message", message, {
+        await axios.post("https://chat-server-docker.onrender.com/api/send-message", message, {
           headers: {
             authorization: token,
           },
@@ -80,6 +80,13 @@ const ChatWindow = () => {
       } catch (error) {
         console.error("Error sending message", error);
       }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
     }
   };
 
@@ -104,12 +111,14 @@ const ChatWindow = () => {
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`p-3 max-w-xs rounded-lg shadow-md ${
-                  msg.sender !== recipientId ? "bg-blue-500 text-white self-end" : "bg-gray-200 self-start"
-                }`}
+                className={`${
+                  msg.sender !== recipientId ? "self-end" : "self-start"
+                } flex flex-col items-end` }
               >
-                <p>{msg.message}</p>
-                <span className="text-xs text-gray-600">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                <p className={`p-3 max-w-xs rounded-lg shadow-md ${
+                  msg.sender !== recipientId ? "bg-blue-500 text-white self-end" : "bg-gray-200 self-start"
+                }`}>{msg.message}</p>
+                <span className="text-xs text-gray-600 ">{new Date(msg.timestamp).toLocaleTimeString()}</span>
               </div>
             ))}
           </div>
@@ -120,6 +129,7 @@ const ChatWindow = () => {
               className="flex-1 p-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300 mr-2"
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
             <button
               className="p-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"

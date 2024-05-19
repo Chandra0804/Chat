@@ -1,13 +1,12 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import ChatList from "../components/ChatList";
+import React, { useEffect, useState } from "react";
 import ChatWindow from "../components/ChatWindow";
 import Sidebar from "../components/Sider";
 import socket from "../socket";
-import ExploreFriends from "../components/ExploreFriends";
 import axios from "axios";
 import Requests from "../components/Requests";
 import MyFriends from "../components/MyFriends";
+import { ChakraProvider, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody, PopoverArrow, PopoverCloseButton, Button } from "@chakra-ui/react";
+import ExploreFriends from "../components/ExploreFriends";
 
 export default function Dashboard() {
   const [messages, setMessages] = useState([]);
@@ -19,7 +18,7 @@ export default function Dashboard() {
       window.location.href = "/login";
     } else {
       axios
-        .get("http://localhost:3000/api/dashboard", {
+        .get("https://chat-server-docker.onrender.com/api/dashboard", {
           headers: {
             Authorization: token,
           },
@@ -54,18 +53,12 @@ export default function Dashboard() {
     setComponent(component);
   };
 
-  const renderComponent = (component) => {
-    if (component == "ChatWindow")
-      return <ChatWindow messages={messages} sendMessage={sendMessage} />;
-    else if (component == "Explore") return <ExploreFriends />;
-    else if (component == "Requests") return <Requests/>
-    else if(component == "Friends") return <MyFriends/>
-  };
   return (
-    <div className="flex h-screen">
-      <Sidebar setComponentItem={setComponentItem} />
-
-      {renderComponent(component)}
-    </div>
+    <ChakraProvider>
+      <div className="flex h-screen">
+        <Sidebar setComponentItem={setComponentItem} />
+        <ChatWindow messages={messages} sendMessage={sendMessage} />;
+      </div>
+    </ChakraProvider>
   );
 }

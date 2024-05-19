@@ -1,6 +1,6 @@
 //User controller
 const { get } = require("mongoose");
-const userModel = require("../Models/userModel");
+const userModel = require("../models/userModel");
 const friendRequestModel = require("../models/friendRequestModel");
 const Message = require('../models/messageModel');
 const jwt = require('jsonwebtoken');

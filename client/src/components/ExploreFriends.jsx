@@ -6,11 +6,10 @@ export default function ExploreFriends() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/exploreFriends',{
+    axios.get('https://chat-server-docker.onrender.com/api/exploreFriends', {
       headers: {
         authorization: localStorage.getItem('token'),
       },
-    
     }).then((response) => {
       setUsers(response.data);
     });
@@ -18,7 +17,7 @@ export default function ExploreFriends() {
 
   const handleAddFriend = (userId) => {
     return () => {
-      axios.post('http://localhost:3000/api/sendFriendRequest', {
+      axios.post('https://chat-server-docker.onrender.com/api/sendFriendRequest', {
         to: userId,
       }, {
         headers: {
@@ -26,23 +25,30 @@ export default function ExploreFriends() {
         },
       }).then((response) => {
         console.log(response.data);
+        alert('Friend request sent');
+        window.location.reload();
       });
     };
   }
 
   return (
-    <div className="bg-gray-200 p-4">
-      <h1 className="text-2xl font-bold mb-4">Explore Friends</h1>
-      <div className="grid grid-cols-1 gap-4">
+    <div className="p-4" >
+      <div className="grid grid-cols-1 gap-2">
         {users.map((user) => (
-          <div key={user._id} className="bg-white p-4 shadow rounded">
-            <h3 className="text-lg font-semibold">{user.username}</h3>
-            <p className="text-gray-600">{user.email}</p>
-            <button className="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded" onClick={handleAddFriend(user._id)}>
+          <div key={user._id} className="bg-white p-6 shadow rounded-lg flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl text-gray-800 font-semibold mb-2">{user.username}</h3>
+              <p className="text-gray-600 mb-4">{user.email}</p>
+            </div>
+            <button 
+              className="bg-[#2d3748] hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              onClick={handleAddFriend(user._id)}
+            >
               Add Friend
             </button>
           </div>
         ))}
+        {users.length === 0 && <div className="text-gray-600">No new users found</div>}
       </div>
     </div>
   );
