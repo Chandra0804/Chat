@@ -17,7 +17,8 @@ const server = http.createServer(app);
 // Configure Socket.IO with CORS
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173", // Replace with your client URL
+    origins: ["http://localhost:5173",
+    "https://chat-ipc78zy7v-chandra-sai-teja-adhikarlas-projects.vercel.app/"],
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true

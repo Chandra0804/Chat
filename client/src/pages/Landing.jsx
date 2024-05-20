@@ -23,6 +23,7 @@ const LandingPage = () => {
           <h1 className="text-4xl font-bold mb-4">Welcome to ChatApp</h1>
           <p className="text-xl mb-8">Connect with your friends and family seamlessly.</p>
           <Link to="/register" className="bg-blue-500 px-6 py-3 rounded-full text-lg hover:bg-blue-600">Get Started</Link>
+          <Link to="/chatbot" className="bg-blue-500 px-6 py-3 rounded-full text-lg hover:bg-blue-600">ChatBot</Link>
         </div>
       </section>
 

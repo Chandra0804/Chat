@@ -1,6 +1,8 @@
 const { Router } = require("express");
 const userController = require("../controllers/userController");
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
+
 
 const router = Router();
 
@@ -29,5 +31,15 @@ router.post("/acceptRequest", verifyToken, userController.acceptFriendRequest);
 router.get("/friends", verifyToken, userController.getMyFriends);
 router.post('/send-message',verifyToken, userController.sendMessage);
 router.get('/messages/:recipientId',verifyToken, userController.getMessages);
+
+router.post('/chat', async (req, res) => {
+    try {
+        const response = await axios.post('http://127.0.0.1:5001/chat', { message: req.body.message });
+        res.send({ reply: response.data.reply });
+    } catch (error) {
+        console.error('Error communicating with the Python server:', error);
+        res.status(500).send('Error communicating with the chatbot service.');
+    }
+});
 
 module.exports = router;

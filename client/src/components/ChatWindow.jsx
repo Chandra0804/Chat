@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import ChatList from "./ChatList";
 import { io } from "socket.io-client";
 import axios from "axios";
+import Chatbot from "../pages/ChatBot";
 
 // Get token from localStorage
 const token = localStorage.getItem("token");
@@ -19,15 +20,19 @@ const ChatWindow = () => {
   const [messages, setMessages] = useState([]);
   const [recipientId, setRecipientId] = useState("");
   const [recipient, setRecipient] = useState("");
+  const [isChatBot, setIsChatBot] = useState(false);
 
   useEffect(() => {
     if (token) {
-      const userId = JSON.parse(atob(token.split('.')[1])).userId;
-      socket.emit('join', userId);
+      const userId = JSON.parse(atob(token.split(".")[1])).userId;
+      socket.emit("join", userId);
     }
 
     socket.on("message", (message) => {
-      if (message.recipientId === recipientId || message.sender === recipientId) {
+      if (
+        message.recipientId === recipientId ||
+        message.sender === recipientId
+      ) {
         setMessages((prevMessages) => [...prevMessages, message]);
       }
     });
@@ -42,11 +47,14 @@ const ChatWindow = () => {
       if (!recipientId) return;
 
       try {
-        const response = await axios.get(`https://chat-server-docker.onrender.com/api/messages/${recipientId}`, {
-          headers: {
-            authorization: token,
-          },
-        });
+        const response = await axios.get(
+          `https://chat-server-docker.onrender.com/api/messages/${recipientId}`,
+          {
+            headers: {
+              authorization: token,
+            },
+          }
+        );
         setMessages(response.data.messages);
         setRecipient(response.data.recipient);
       } catch (error) {
@@ -59,7 +67,7 @@ const ChatWindow = () => {
 
   const handleSendMessage = async () => {
     if (input.trim()) {
-      const userId = JSON.parse(atob(token.split('.')[1])).userId;
+      const userId = JSON.parse(atob(token.split(".")[1])).userId;
 
       const message = {
         recipientId,
@@ -69,11 +77,15 @@ const ChatWindow = () => {
       };
 
       try {
-        await axios.post("https://chat-server-docker.onrender.com/api/send-message", message, {
-          headers: {
-            authorization: token,
-          },
-        });
+        await axios.post(
+          "https://chat-server-docker.onrender.com/api/send-message",
+          message,
+          {
+            headers: {
+              authorization: token,
+            },
+          }
+        );
 
         socket.emit("message", message);
         setInput("");
@@ -90,14 +102,21 @@ const ChatWindow = () => {
     }
   };
 
-  return (
-    <>
-      <ChatList setRecipientId={setRecipientId} />
-      {recipientId === "" ? (
+  const renderComponent = () => {
+    if (recipientId === "" && !isChatBot) {
+      return (
         <div className="flex-1 flex items-center justify-center bg-gray-100">
-          <h1 className="text-2xl text-gray-700">Select a chat to start messaging</h1>
+          <h1 className="text-2xl text-gray-700">
+            Select a chat to start messaging
+          </h1>
         </div>
-      ) : (
+      )
+    }
+    else if (isChatBot) {
+      return <Chatbot />
+    }
+    else {
+      return (
         <div className="flex-1 flex flex-col bg-white">
           <div className="p-4 bg-blue-600 text-white font-bold shadow-md">
             <div className="flex items-center">
@@ -113,12 +132,20 @@ const ChatWindow = () => {
                 key={index}
                 className={`${
                   msg.sender !== recipientId ? "self-end" : "self-start"
-                } flex flex-col items-end` }
+                } flex flex-col items-end`}
               >
-                <p className={`p-3 max-w-xs rounded-lg shadow-md ${
-                  msg.sender !== recipientId ? "bg-blue-500 text-white self-end" : "bg-gray-200 self-start"
-                }`}>{msg.message}</p>
-                <span className="text-xs text-gray-600 ">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+                <p
+                  className={`p-3 max-w-xs rounded-lg shadow-md ${
+                    msg.sender !== recipientId
+                      ? "bg-blue-500 text-white self-end"
+                      : "bg-gray-200 self-start"
+                  }`}
+                >
+                  {msg.message}
+                </p>
+                <span className="text-xs text-gray-600 ">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </span>
               </div>
             ))}
           </div>
@@ -139,9 +166,16 @@ const ChatWindow = () => {
             </button>
           </div>
         </div>
-      )}
+      )
+    }
+  }
+
+  return (
+    <>
+      <ChatList setRecipientId={setRecipientId} setIsChatBot={setIsChatBot} />
+      {renderComponent()}
     </>
   );
 };
 
-export default ChatWindow;
+export default ChatWindow
